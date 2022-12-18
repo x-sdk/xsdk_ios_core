@@ -16,6 +16,7 @@ Pod::Spec.new do |s|
     s.libraries    = 'stdc++'
     
     s.source_files  = "src/**/*"
+ 
     s.public_header_files = "src/**/**/*.h"
     
   end
