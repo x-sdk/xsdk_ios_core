@@ -51,29 +51,49 @@ static XSDK*  mInstace = nil;
     }
 }
 
+-(bool) hasSDK:(NSString*) sdkName :(NSString*) sdkType
+{
+    if ( [sdkType isEqual:@"oauth" ]) {
+        return [self->mLoginSDKMap objectForKey:sdkName] != nil;
+          
+          } else if ([sdkType isEqual:@"share"]) {
+              return [self->mShareSDKMap objectForKey:sdkName] != nil;
+          } else if ([sdkType isEqual:@"payment"]) {
+              return  [self->mPaySDKMap objectForKey:sdkName] != nil;
+          } else if ([sdkType isEqual:@"push"]) {
+              
+          } else if ([sdkType isEqual:@"ad"]) {
+
+          }  else if ([sdkType isEqual:@"event"]) {
+             
+          }
+          return false;
+}
+
 -(void) initSDK:(SDKParams*) params :(id<IXSDKCallback>)callBack
 {
     [self doInUIThread: ^{
-        if (params.service == @"oauth") {
+  
+        if([@"oauth" isEqual:params.service]) {
             id<ISDK> object = [self->mLoginSDKMap objectForKey:params.provider];
             if(object != nil){
                 [object initSDK:params:callBack];
                 return;
             }
             
-        } else if (params.service == @"share") {
+        } else  if([@"share" isEqual:params.service])  {
             id<ISDK> object = [self->mShareSDKMap objectForKey:params.provider];
             if(object != nil){
                 [object initSDK:params:callBack];
                 return;
             }
-        } else if (params.service == @"payment") {
+        } else  if([@"payment" isEqual:params.service])  {
             id<ISDK> object = [self->mPaySDKMap objectForKey:params.provider];
             if(object != nil){
                 [object initSDK:params:callBack];
                 return;
             }
-        } else if (params.service == @"push") {
+        } else if([@"push" isEqual:params.service]) {
             
         }else{
             id<ISDK> object = [self->mLoginSDKMap objectForKey:params.provider];
@@ -93,6 +113,8 @@ static XSDK*  mInstace = nil;
                 [object initSDK:params:callBack];
                 return;
             }
+        
+            [callBack onFaild: [[NSString alloc] initWithFormat:@"%@,%@", @"no Found SDK:", params.service ]];
         }
     }];
 }
@@ -123,8 +145,6 @@ static XSDK*  mInstace = nil;
 
 -(void) share:(ShareParams*) params :(id<IXSDKCallback>)callBack
 {
-    
-    
     [self doInUIThread: ^{
         id<IShare> object = [self->mShareSDKMap objectForKey:params.provider];
         if(object != nil){
@@ -135,14 +155,21 @@ static XSDK*  mInstace = nil;
     }];
 }
 
++(bool) hasSDK:(NSString*) json
+{
+    NSData *jsonData =  [json dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:nil];
+    return [[XSDK getInstance] hasSDK:[dict objectForKey:@"provider"] :[dict objectForKey:@"service"]];
+}
+
 +(void) initSDK:(NSString*) json :(id<IXSDKCallback>)callBack
 {
     NSData *jsonData =  [json dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
                                                          options:NSJSONReadingMutableContainers
                                                            error:nil];
-    
-    
     SDKParams *params = [[SDKParams alloc] init];
     [params setValuesForKeysWithDictionary:dict];
     
@@ -154,8 +181,6 @@ static XSDK*  mInstace = nil;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
                                                          options:NSJSONReadingMutableContainers
                                                            error:nil];
-    
-    
     LoginParams *params = [[LoginParams alloc] init];
     [params setValuesForKeysWithDictionary:dict];
     
@@ -179,19 +204,7 @@ static XSDK*  mInstace = nil;
     NSDictionary *data = [[NSDictionary alloc] initWithObjectsAndKeys: nil];
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingPrettyPrinted error:nil];
     NSString* ret = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    
- 
     [callBack onSucess:ret];
-    
-//    NSData *jsonData =  [json dataUsingEncoding:NSUTF8StringEncoding];
-//    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
-//                                                         options:NSJSONReadingMutableContainers
-//                                                           error:nil];
-//
-//
-//    ShareParams *params = [[ShareParams alloc] init];
-//    [params setValuesForKeysWithDictionary:dict];
-//    [[XSDK getInstance] share:params :callBack];
 }
 
 //========================================================
