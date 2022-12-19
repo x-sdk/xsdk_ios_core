@@ -15,6 +15,7 @@
 -(bool) hasSDK:(NSString*) sdkName :(NSString*) sdkType;
 -(void) initSDK:(SDKParams*) params :(id<IXSDKCallback>)callBack;
 -(void) login:(LoginParams*) params :(id<IXSDKCallback>)callBack;
+-(void) logout:(LogoutParams*) params :(id<IXSDKCallback>)callBack;
 -(void) pay:(PayParams*) params :(id<IXSDKCallback>)callBack;
 -(void) share:(ShareParams*) params :(id<IXSDKCallback>)callBack;
 
@@ -23,10 +24,10 @@
 - (void) forShare:(NSString *)provider :(id<IShare>)  obj;
 - (void) forPush:(NSString *)provider :(id<IPush>)  obj;
 
-
 +(bool) hasSDK:(NSString*) json;
 +(void) initSDK:(NSString*) json :(id<IXSDKCallback>)callBack;
 +(void) login:(NSString*) json :(id<IXSDKCallback>)callBack;
++(void) logout:(NSString*) json  :(id<IXSDKCallback>)callBack;
 +(void) pay:(NSString*) json :(id<IXSDKCallback>)callBack;
 +(void) share:(NSString*) json :(id<IXSDKCallback>)callBack;
 +(void) onPush:(id<IPushCallback>)callback;

@@ -2,7 +2,7 @@
 //  XSDKModuleManager.m
 //  XSDKModuleManager
 //
-//  Created by 吕佳珍 on 2020/3/30.
+//  Created by yuangu on 2020/3/30.
 //
 
 #import "XSDKModuleManager.h"

@@ -45,9 +45,9 @@ static XSDK*  mInstace = nil;
 -(void) doInUIThread:(dispatch_block_t) block
 {
     if (strcmp(dispatch_queue_get_label(DISPATCH_CURRENT_QUEUE_LABEL), dispatch_queue_get_label(dispatch_get_main_queue())) == 0) {
-                block();
+        block();
     } else {
-                dispatch_async(dispatch_get_main_queue(),  block);
+        dispatch_async(dispatch_get_main_queue(),  block);
     }
 }
 
@@ -55,25 +55,24 @@ static XSDK*  mInstace = nil;
 {
     if ( [sdkType isEqual:@"oauth" ]) {
         return [self->mLoginSDKMap objectForKey:sdkName] != nil;
-          
-          } else if ([sdkType isEqual:@"share"]) {
-              return [self->mShareSDKMap objectForKey:sdkName] != nil;
-          } else if ([sdkType isEqual:@"payment"]) {
-              return  [self->mPaySDKMap objectForKey:sdkName] != nil;
-          } else if ([sdkType isEqual:@"push"]) {
-              
-          } else if ([sdkType isEqual:@"ad"]) {
-
-          }  else if ([sdkType isEqual:@"event"]) {
-             
-          }
-          return false;
+        
+    } else if ([sdkType isEqual:@"share"]) {
+        return [self->mShareSDKMap objectForKey:sdkName] != nil;
+    } else if ([sdkType isEqual:@"payment"]) {
+        return  [self->mPaySDKMap objectForKey:sdkName] != nil;
+    } else if ([sdkType isEqual:@"push"]) {
+        
+    } else if ([sdkType isEqual:@"ad"]) {
+        
+    }  else if ([sdkType isEqual:@"event"]) {
+        
+    }
+    return false;
 }
 
 -(void) initSDK:(SDKParams*) params :(id<IXSDKCallback>)callBack
 {
     [self doInUIThread: ^{
-  
         if([@"oauth" isEqual:params.service]) {
             id<ISDK> object = [self->mLoginSDKMap objectForKey:params.provider];
             if(object != nil){
@@ -113,7 +112,7 @@ static XSDK*  mInstace = nil;
                 [object initSDK:params:callBack];
                 return;
             }
-        
+            
             [callBack onFaild: [[NSString alloc] initWithFormat:@"%@,%@", @"no Found SDK:", params.service ]];
         }
     }];
@@ -130,6 +129,18 @@ static XSDK*  mInstace = nil;
         NSLog(@"xsdk not found %@", params.provider);
     }];
 }
+
+-(void) logout:(LogoutParams*) params :(id<IXSDKCallback>)callBack{
+    [self doInUIThread: ^{
+        id<ILogin> object = [self->mLoginSDKMap objectForKey:params.provider];
+        if(object != nil){
+            [object logout:params:callBack];
+            return;
+        }
+        NSLog(@"xsdk not found %@", params.provider);
+    }];
+}
+
 
 -(void) pay:(PayParams*) params :(id<IXSDKCallback>)callBack
 {
@@ -161,7 +172,7 @@ static XSDK*  mInstace = nil;
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
                                                          options:NSJSONReadingMutableContainers
                                                            error:nil];
-    return [[XSDK getInstance] hasSDK:[dict objectForKey:@"provider"] :[dict objectForKey:@"service"]];
+    return [[XSDK getInstance] hasSDK:[dict objectForKey:@"provider"] :[dict objectForKey:@"service" ]];
 }
 
 +(void) initSDK:(NSString*) json :(id<IXSDKCallback>)callBack
@@ -187,13 +198,24 @@ static XSDK*  mInstace = nil;
     [[XSDK getInstance] login:params :callBack];
 }
 
++(void) logout:(NSString*) json :(id<IXSDKCallback>)callBack{
+    NSData *jsonData =  [json dataUsingEncoding:NSUTF8StringEncoding];
+    NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
+                                                         options:NSJSONReadingMutableContainers
+                                                           error:nil];
+    LogoutParams *params = [[LogoutParams alloc] init];
+    [params setValuesForKeysWithDictionary:dict];
+    
+    [[XSDK getInstance] logout:params :callBack];
+}
+
 +(void) pay:(NSString*) json :(id<IXSDKCallback>)callBack
 {
     NSData *jsonData =  [json dataUsingEncoding:NSUTF8StringEncoding];
     NSDictionary *dict = [NSJSONSerialization JSONObjectWithData:jsonData
                                                          options:NSJSONReadingMutableContainers
                                                            error:nil];
-
+    
     PayParams *params = [[PayParams alloc] init];
     [params setValuesForKeysWithDictionary:dict];
     [[XSDK getInstance] pay:params :callBack];
@@ -209,11 +231,11 @@ static XSDK*  mInstace = nil;
 
 //========================================================
 - (void) setPushCallBack:(id<IPushCallback>)callback{
-      mPushCallback = callback;
+    mPushCallback = callback;
 }
 
 - (id<IPushCallback>) getPushCallBack{
-        return mPushCallback;
+    return mPushCallback;
 }
 
 +(void)onPush:(id<IPushCallback>)callback {

@@ -2,7 +2,7 @@
 //  XSDKModuleManager.h
 //  XSDKModuleManager
 //
-//  Created by 吕佳珍 on 2020/3/30.
+//  Created by yuangu on 2020/3/30.
 //
 
 // copy f;rom https://github.com/krisouljz/LvModuleManager
