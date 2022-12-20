@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
     s.author           = { 'yuangu' => 'seantone@126.com' }
     s.source           = { :git => 'https://gitee.com/x-sdk/xsdk_ios_core.git', :tag => s.version.to_s }
     
-    s.ios.deployment_target = '11.0'
+    s.ios.deployment_target = '9.0'
     s.static_framework = true
     s.libraries    = 'stdc++'
     
